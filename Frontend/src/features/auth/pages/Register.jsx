@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { useAuth } from "../hooks/useAuth"
+import "../auth.form.scss"
 
 const Register = () => {
-
-
 
     const navigate = useNavigate();
     const [username, setUsername] = useState("")
@@ -16,10 +15,10 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await handleRegister({ username, email, password })
-        navigate("/")
-
-
+        const success = await handleRegister({ username, email, password })
+        if (success) {
+            navigate("/")
+        }
     }
     return (
         <main>
@@ -31,7 +30,6 @@ const Register = () => {
                     <div className="input-group">
                         <label htmlFor="username">Username</label>
                         <input
-                            // this is 2 way binding for register page 
                             onChange={(e) => { setUsername(e.target.value) }}
                             type="text" id='username' name='username' placeholder='Enter username' />
                     </div>
@@ -47,7 +45,7 @@ const Register = () => {
                         <label htmlFor="password">Password</label>
                         <input
                             onChange={(e) => { setPassword(e.target.value) }}
-                            type="text" id='password' name='password' placeholder='Enter your Password' />
+                            type="password" id='password' name='password' placeholder='Enter your Password' />
                     </div>
 
                     <button className='button primary-button'>Register</button>

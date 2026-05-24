@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     username: {
         type : String,
-        unique: [true , "username already taken"],
+        unique: true,
         required: true ,
     },
 
     email : {
         type : String,
-        unique: [true , "Account already exists with this email"],
+        unique: true,
         required : true,
     },
     password:{
@@ -22,4 +22,3 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model("User" , userSchema);
 
 module.exports = userModel;
-

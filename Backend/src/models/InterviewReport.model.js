@@ -65,7 +65,7 @@ const skillgapSchema  = new mongoose.Schema({
     },
     severity : {
         type : String,
-        enum : ["low" , "medium" , "high"],
+        enum : ["low" , "medium" , "high"], //enum is used to restrict values 
         required : [true , "Severity is required"]
     }
 } , {
@@ -107,7 +107,7 @@ const interviewReportSchema = new mongoose.Schema({
     skillgap : [skillgapSchema],
     preparationPlan : [preparationPlanSchema]
 } , {
-    timestamps : true
+    timestamps : true //timestamps automatically use createAt and updateAt in every document 
 })
 
 

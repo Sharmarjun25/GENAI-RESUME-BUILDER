@@ -47,6 +47,29 @@ const interviewReportSchema = z.object({
     })).describe("A day-wise preparation plan for the candidate to follow in order")
 })
 
+/**
+ * Removes fields from a JSON Schema that Gemini's API does not support.
+ * zodToJsonSchema adds "$schema" and "additionalProperties: false" which
+ * cause Gemini to return a 400 Bad Request error.
+ */
+function cleanSchemaForGemini(schema) {
+    if (typeof schema !== "object" || schema === null) return schema;
+
+    const cleaned = {};
+    for (const [key, value] of Object.entries(schema)) {
+        // Skip fields Gemini doesn't support
+        if (key === "$schema" || key === "additionalProperties") continue;
+        if (typeof value === "object" && !Array.isArray(value)) {
+            cleaned[key] = cleanSchemaForGemini(value);
+        } else if (Array.isArray(value)) {
+            cleaned[key] = value.map(item => cleanSchemaForGemini(item));
+        } else {
+            cleaned[key] = value;
+        }
+    }
+    return cleaned;
+}
+
 async function generateInterviewReport({resume , selfdescription , jobdescription}){
 
     const prompt = `Generate an interview report for a candidate with the following details :
@@ -54,20 +77,33 @@ async function generateInterviewReport({resume , selfdescription , jobdescriptio
     SelfDescription : ${selfdescription}
     JobDescription : ${jobdescription}`
 
-    
+    try {
+        // Clean the schema — Gemini rejects $schema and additionalProperties:false
+        const rawSchema = zodToJsonSchema(interviewReportSchema);
+        const geminiSchema = cleanSchemaForGemini(rawSchema);
+
         const response = await ai.models.generateContent({
             model : "gemini-2.5-flash",
             contents: prompt,
             config:{
                 responseMimeType : "application/json",
-                responseSchema :  zodToJsonSchema(interviewReportSchema)
+                responseSchema : geminiSchema
             }
         })
 
-        const result = JSON.parse(response.text)
-        console.log(result)
-       // return result;
-     
+        // Extract JSON — Gemini may wrap it in markdown code fences
+        let rawText = response.text.trim();
+        if (rawText.startsWith("```")) {
+            rawText = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+        }
+
+        const result = JSON.parse(rawText)
+        return result;
+
+    } catch (err) {
+        console.error("generateInterviewReport error:", err.message);
+        throw err; // re-throw so the controller's catch block handles it
+    }
 }
 
 module.exports = generateInterviewReport;

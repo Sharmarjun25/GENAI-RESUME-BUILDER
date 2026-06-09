@@ -81,10 +81,12 @@ const skillgapSchema  = new mongoose.Schema({
         type : String ,
         required : [true , "Focus is required"]
     },
-    tasks:{
+    tasks:[{
         type : String,
         required : [true , "Task is required"]
-    }
+    }]
+ } , {
+    _id : false  // Fix: consistent with other sub-schemas; avoids unnecessary _id on plan entries
  })
 const interviewReportSchema = new mongoose.Schema({
     jobDescription : {
@@ -97,15 +99,19 @@ const interviewReportSchema = new mongoose.Schema({
     SelfDescription : {
         type : String,
     },
-    matchscore:{
+    matchScore:{
         type : Number,
         min : 0,
         max : 100,
     },
     technicalQuestions : [technicalQuestionSchema],
-    behavioralQuestions : [behavioralQuestionSchema],
-    skillgap : [skillgapSchema],
-    preparationPlan : [preparationPlanSchema]
+    behavioralQuestion : [behavioralQuestionSchema],
+    skillGaps : [skillgapSchema],
+    preparationPlan : [preparationPlanSchema],
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"users"
+    }
 } , {
     timestamps : true //timestamps automatically use createAt and updateAt in every document 
 })

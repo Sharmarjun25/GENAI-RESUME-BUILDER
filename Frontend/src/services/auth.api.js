@@ -1,6 +1,5 @@
 import axios from "axios"
 
-
 const api = axios.create({
     baseURL: "http://localhost:3000",
     withCredentials: true
@@ -13,10 +12,11 @@ export async function register({ username, email, password }) {
         })
         return response.data
     } catch (err) {
-        console.log(err)
+        // Re-throw with the server's message so the UI can display it
+        const message = err.response?.data?.message || "Registration failed. Please try again."
+        throw new Error(message)
     }
 }
-
 
 export async function login({ email, password }) {
     try {
@@ -25,7 +25,9 @@ export async function login({ email, password }) {
         })
         return response.data;
     } catch (err) {
-        console.log(err);
+        // Re-throw with the server's message so the UI can display it
+        const message = err.response?.data?.message || "Login failed. Please try again."
+        throw new Error(message)
     }
 }
 
@@ -43,6 +45,7 @@ export async function getMe() {
         const response = await api.get("/api/auth/get-me", {})
         return response.data
     } catch (err) {
-        console.log(err);
+        // Not logged in — this is expected, don't throw
+        return null
     }
 }

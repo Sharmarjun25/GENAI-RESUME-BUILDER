@@ -14,13 +14,13 @@ export const useAuth = () => {
             const data = await login({ email, password })
             if (data && data.user) {
                 setUser(data.user)
-                return true
+                return true  // success — Login.jsx will call navigate('/')
             }
-            return false
+            return "Login failed. Please try again."
 
         } catch (err) {
-            console.log(err)
-            return false
+            // err.message contains the server error (e.g. "Invalid email or password")
+            return err.message || "Something went wrong. Is the server running?"
         } finally {
             setLoading(false)
         }
@@ -32,13 +32,13 @@ export const useAuth = () => {
             const data = await register({ username, email, password })
             if (data && data.user) {
                 setUser(data.user)
-                return true
+                return true  // success — Register.jsx will call navigate('/')
             }
-            return false
+            return "Registration failed. Please try again."
 
         } catch (err) {
-            console.log(err)
-            return false
+            // err.message contains the server error (e.g. "Account already exists")
+            return err.message || "Something went wrong. Is the server running?"
         } finally {
             setLoading(false)
         }

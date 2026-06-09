@@ -9,21 +9,38 @@ const Register = () => {
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
 
     const { loading, handleRegister } = useAuth()
 
-
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const success = await handleRegister({ username, email, password })
-        if (success) {
+        setError("")
+
+        if (!username || !email || !password) {
+            setError("Please fill in all fields.")
+            return
+        }
+
+        const result = await handleRegister({ username, email, password })
+
+        if (result === true) {
             navigate("/")
+        } else {
+            setError(result || "Registration failed. Please try again.")
         }
     }
+
     return (
         <main>
             <div className="form-container">
                 <h1>Register</h1>
+
+                {error && (
+                    <p style={{ color: '#ff4d4f', background: 'rgba(255,77,79,0.1)', padding: '10px 14px', borderRadius: '6px', marginBottom: '12px', fontSize: '14px' }}>
+                        {error}
+                    </p>
+                )}
 
                 <form onSubmit={handleSubmit}>
 
@@ -31,6 +48,7 @@ const Register = () => {
                         <label htmlFor="username">Username</label>
                         <input
                             onChange={(e) => { setUsername(e.target.value) }}
+                            value={username}
                             type="text" id='username' name='username' placeholder='Enter username' />
                     </div>
 
@@ -38,6 +56,7 @@ const Register = () => {
                         <label htmlFor="email">Email</label>
                         <input
                             onChange={(e) => { setEmail(e.target.value) }}
+                            value={email}
                             type="text" id='email' name='email' placeholder='Enter email address' />
                     </div>
 
@@ -45,15 +64,17 @@ const Register = () => {
                         <label htmlFor="password">Password</label>
                         <input
                             onChange={(e) => { setPassword(e.target.value) }}
+                            value={password}
                             type="password" id='password' name='password' placeholder='Enter your Password' />
                     </div>
 
-                    <button className='button primary-button'>Register</button>
-
+                    <button className='button primary-button' disabled={loading}>
+                        {loading ? 'Registering...' : 'Register'}
+                    </button>
 
                 </form>
 
-                <p>Already have an account? <Link to={"/login"} >Login</Link ></p>
+                <p>Already have an account? <Link to={"/login"}>Login</Link></p>
             </div>
         </main>
     )

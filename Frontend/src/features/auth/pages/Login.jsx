@@ -42,7 +42,7 @@ const Login = () => {
 
                 {error && (
                     <p style={{ color: '#ff4d4f', background: 'rgba(255,77,79,0.1)', padding: '10px 14px', borderRadius: '6px', marginBottom: '12px', fontSize: '14px' }}>
-                        ⚠️ {error}
+                        {error}
                     </p>
                 )}
 

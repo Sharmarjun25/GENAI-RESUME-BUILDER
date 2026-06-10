@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import "../style/home.scss"
+import { useInterview } from '../hooks/useInterview'
 export const Home = () => {
+
+
+    const { loading, generateReport } = useInterview()
+
+    const { jobDescription, setJobDescription } = useState("")
+    const { selfDescription, setSelfDescription } = useState("")
+    const resumeInputRef = useRef()
+
+
+
+
+
     return (
         <main className='home'>
 

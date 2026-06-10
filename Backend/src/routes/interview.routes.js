@@ -15,4 +15,20 @@ const interviewRouter = express.Router();
 // Auth temporarily disabled for testing — re-enable before production
 interviewRouter.post("/", upload.single("resume"), interviewController.generateInterviewReportController);
 
+/**
+ * @route GET/api/interview/report/:interviewId
+ * @description get interview report by interviewId
+ * @access private
+ */
+interviewRouter.get("/report/:interviewId", authMiddleware.authUser, interviewController.getInterviewReportByIdController)
+
+
+/**
+ * @route GET/api/interview/
+ * @description get all interview reports of logged in user.
+ * @access private
+ */
+
+interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllInterviewReportController)
+
 module.exports = interviewRouter

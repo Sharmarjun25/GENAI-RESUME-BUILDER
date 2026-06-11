@@ -3,6 +3,8 @@ const { zodToJsonSchema } = require("zod-to-json-schema");
 const { GoogleGenAI } = require("@google/genai");
 const { z } = require('zod');
 
+const puppeteer = require("puppeteer")
+
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENAI_API_KEY
 })
@@ -50,7 +52,7 @@ const interviewReportSchema = z.object({
 })
 
 /**
- * Removes fields from a JSON Schema that Gemini's API does not support.
+ * Removes fields from a JSON Schema that Gemini API does not support.
  * zodToJsonSchema adds "$schema" and "additionalProperties: false" which
  * cause Gemini to return a 400 Bad Request error.
  */
@@ -108,4 +110,69 @@ async function generateInterviewReport({ resume, selfdescription, jobdescription
     }
 }
 
-module.exports = generateInterviewReport;
+
+async function generatePdfFromHtml(htmlContent) {
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage();
+
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" })
+
+    const pdfBuffer = await page.pdf({
+        format: "A4"
+    })
+    await browser.close()
+
+    return pdfBuffer
+}
+
+
+
+
+async function generateResumePdf({ resume, selfdescription, jobdescription }) {
+
+    const resumePdfSchema = z.object({
+        html: z.string().describe("The HTML content of the resume which can be converted to PDF using any library")
+
+    })
+
+    const prompt = `Generate  resume  for a candidate with the following details :
+                    Resume : ${resume}
+                    SelfDescription : ${selfdescription}
+                    Job Description : ${jobdescription}
+                    
+                    the response should be a JSON object with a single field "html" which 
+                    contains HTML content of the resume which can be converted to PDF using any library
+                    like puppeteer.
+                    `
+
+    try {
+        // Clean the schema — Gemini rejects $schema and additionalProperties:false
+        const rawSchema = zodToJsonSchema(resumePdfSchema);
+        const geminiSchema = cleanSchemaForGemini(rawSchema);
+
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: geminiSchema
+            }
+        })
+
+        // Extract JSON — Gemini may wrap it in markdown code fences
+        let rawText = response.text.trim();
+        if (rawText.startsWith("```")) {
+            rawText = rawText.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+        }
+
+        const result = JSON.parse(rawText)
+        return result;
+
+    } catch (err) {
+        console.error("generateResumePdf error:", err.message);
+        throw err; // re-throw so the controller's catch block handles it
+    }
+}
+
+
+module.exports = { generateInterviewReport, generateResumePdf };

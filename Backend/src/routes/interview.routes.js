@@ -13,7 +13,7 @@ const interviewRouter = express.Router();
 
 
 // Auth temporarily disabled for testing — re-enable before production
-interviewRouter.post("/", upload.single("resume"), interviewController.generateInterviewReportController);
+interviewRouter.post("/", authMiddleware.authUser, upload.single("resume"), interviewController.generateInterviewReportController);
 
 /**
  * @route GET/api/interview/report/:interviewId

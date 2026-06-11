@@ -4,39 +4,36 @@ const interviewReportModel = require("../models/InterviewReport.model")
 
 
 /**
- * @description Controller to generate interviee report based on user self description , resume and job
+ * @description Controller to generate interview report based on user self description , resume and job
  */
 async function generateInterviewReportController(req, res) {
     try {
-        // Guard: ensure a file was actually uploaded
-        if (!req.file || !req.file.buffer) {
+        const { selfDescription, jobDescription } = req.body
+
+        if (!jobDescription) {
             return res.status(400).json({
-                message: "No resume PDF file uploaded. Please attach a PDF file with field name 'resume'."
+                message: "jobDescription is a required field."
             });
         }
 
-        // Parse the uploaded PDF buffer directly
-        const pdfParser = new PDFParse({ data: req.file.buffer })
-        const resumeContent = await pdfParser.getText();
-
-        const { selfDescription, jobDescription } = req.body
-
-        if (!selfDescription || !jobDescription) {
-            return res.status(400).json({
-                message: "selfDescription and jobDescription are required fields."
-            });
+        // Parse resume PDF if uploaded, otherwise fall back to empty string
+        let resumeText = ""
+        if (req.file && req.file.buffer) {
+            const pdfParser = new PDFParse(req.file.buffer)
+            const pdfData = await pdfParser.getText()
+            resumeText = pdfData
         }
 
         const interViewReportByAi = await generateInterviewReport({
-            resume: resumeContent.text,
-            selfdescription: selfDescription,
+            resume: resumeText,
+            selfdescription: selfDescription || "",
             jobdescription: jobDescription
         })
 
         const interviewReport = await interviewReportModel.create({
-            // user: req.user.id,
-            resume: resumeContent.text,
-            SelfDescription: selfDescription,
+            user: req.user.id,
+            resume: resumeText,
+            selfDescription: selfDescription || "",
             jobDescription: jobDescription,
             ...interViewReportByAi
         })
@@ -57,7 +54,6 @@ async function generateInterviewReportController(req, res) {
 
 
 /**
- * 
  * @description Controller to get interview report by interviewId
  */
 async function getInterviewReportByIdController(req, res) {
@@ -75,16 +71,16 @@ async function getInterviewReportByIdController(req, res) {
         message: "interview report fetched successfully.",
         interviewReport
     })
-
-
 }
 
 /**
  * @description Controller to get all interview reports of logged in user
  */
-
 async function getAllInterviewReportController(req, res) {
-    const interviewReports = (await interviewReportModel.find({ user: req.user.id })).toSorted({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan")
+    const interviewReports = await interviewReportModel
+        .find({ user: req.user.id })
+        .sort({ createdAt: -1 })
+        .select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan")
 
     res.status(200).json({
         message: "Interview reports fetched successfully.",

@@ -60,18 +60,18 @@ const Interview = () => {
     const [activeNav, setActiveNav] = useState('technical')
     const { report, getReportById, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
-
-    useEffect(() => {
-        if (interviewId) {
-            getReportById(interviewId)
-        }
-
-    }, [interviewId])
+    /*
+        useEffect(() => {
+            if (interviewId) {
+                getReportById(interviewId)
+            }
+    
+        }, [interviewId])*/
 
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+                <h1>Loading your own customized plan plan...</h1>
             </main>
         )
     }
@@ -118,12 +118,12 @@ const Interview = () => {
                         <section>
                             <div className='content-header'>
                                 <h2>Technical Questions</h2>
-                                <span className='content-header_count'>{report.technicalQuestions.length} Questions</span>
+                                <span className='content-header_count'>{report.technicalQuestions?.length ?? 0} Questions</span>
 
 
                             </div>
                             <div className='q-list'>
-                                {report.technicalQuestions.map((q, i) => (
+                                {report.technicalQuestions?.map((q, i) => (
                                     <QuestionCard key={i} item={q} index={i} />
                                 ))}
 
@@ -135,12 +135,12 @@ const Interview = () => {
                         <section>
                             <div className='content-header'>
                                 <h2>Behavioral Questions</h2>
-                                <span className='content-header_count'>{report.behavioralQuestions.length} Questions</span>
+                                <span className='content-header_count'>{report.behavioralQuestions?.length ?? 0} Questions</span>
 
 
                             </div>
                             <div className='q-list'>
-                                {report.behavioralQuestions.map((q, i) => (
+                                {report.behavioralQuestions?.map((q, i) => (
                                     <QuestionCard key={i} item={q} index={i} />
                                 ))}
 
@@ -152,13 +152,13 @@ const Interview = () => {
                         <section>
                             <div className='content-header'>
                                 <h2>Preparation Road Map</h2>
-                                <span className='content-header_count'>{report.preparationPlan.length}-day plan</span>
+                                <span className='content-header_count'>{report.preparationPlan?.length ?? 0}-day plan</span>
 
 
                             </div>
                             <div className='roadmap-list'>
-                                {report.preparationPlan.map((q, i) => (
-                                    <RoadMap key={day.day} day={day} />
+                                {report.preparationPlan?.map((q, i) => (
+                                    <RoadMapDay key={q.day} day={q} />
                                 ))}
 
                             </div>
@@ -183,7 +183,7 @@ const Interview = () => {
                     <div className='skill-gaps'>
                         <p className='skill-gaps__label'>Skill Gaps</p>
                         <div className='skill-gaps__list'>
-                            {report.skillGaps.map((gap, i) => (
+                            {report.skillGaps?.map((gap, i) => (
                                 <span key={i} className={`skill-tag skill-tag--${gap.severity}`}>
                                     {gap.skill}
                                 </span>

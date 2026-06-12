@@ -1,3 +1,4 @@
+@use 'sass:color';
 $bg-page: #0d1117;
 $bg-card: #161b22;
 $bg-panel: #1c2230;
@@ -109,6 +110,40 @@ $severity-low: #3fb950;
     }
 }
 
+.nav-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.download-resume-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, $accent 0%, color.adjust($accent, $lightness: -10%) 100%);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-family: $font-stack;
+    transition: opacity 0.2s, transform 0.1s;
+
+    &:hover {
+        opacity: 0.88;
+    }
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
 // ── Center Content ────────────────────────────────────────────────────────────
 .interview-content {
     flex: 1;
@@ -171,7 +206,7 @@ $severity-low: #3fb950;
     transition: border-color 0.2s;
 
     &:hover {
-        border-color: lighten($border-color, 8%);
+        border-color: color.adjust($border-color, $lightness: 8%);
     }
 
     &__header {
@@ -233,7 +268,7 @@ $severity-low: #3fb950;
         p {
             margin: 0;
             font-size: 0.835rem;
-            color: lighten($text-muted, 15%);
+            color: color.adjust($text-muted, $lightness: 15%);
             line-height: 1.6;
         }
     }
@@ -337,7 +372,7 @@ $severity-low: #3fb950;
             align-items: flex-start;
             gap: 0.5rem;
             font-size: 0.845rem;
-            color: lighten($text-muted, 12%);
+            color: color.adjust($text-muted, $lightness: 12%);
             line-height: 1.5;
         }
     }

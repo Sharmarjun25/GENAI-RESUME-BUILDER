@@ -37,6 +37,11 @@ const Login = () => {
 
     return (
         <main>
+            <header className='page-header'>
+                <h1>Tailor Your Application for the <span className='highlight'>Dream Role</span></h1>
+                <p>Instantly optimize your resume and generate targeted technical and behavioral preparation plans.</p>
+            </header>
+
             <div className="form-container">
                 <h1>Login</h1>
 

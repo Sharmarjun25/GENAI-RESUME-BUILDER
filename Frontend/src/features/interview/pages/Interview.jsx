@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import '../style/interview.scss'
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate, useParams } from 'react-router'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 
 
 const NAV_ITEMS = [
@@ -58,8 +59,18 @@ const RoadMapDay = ({ day }) => (
 
 const Interview = () => {
     const [activeNav, setActiveNav] = useState('technical')
-    const { report, getReportById, loading, getResumePdf } = useInterview()
+    const { report, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
+
+    // to logout function
+
+    const navigate = useNavigate()
+    const { handleLogout } = useAuth()
+
+    const handleLogoutClick = async () => {
+        await handleLogout();
+        navigate('/login');
+    }
     /*
         useEffect(() => {
             if (interviewId) {
@@ -71,7 +82,7 @@ const Interview = () => {
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your own customized plan plan...</h1>
+                <h1>Loading your own customized resume...</h1>
             </main>
         )
     }
@@ -157,7 +168,7 @@ const Interview = () => {
 
                             </div>
                             <div className='roadmap-list'>
-                                {report.preparationPlan?.map((q, i) => (
+                                {report.preparationPlan?.map((q) => (
                                     <RoadMapDay key={q.day} day={q} />
                                 ))}
 
@@ -175,7 +186,10 @@ const Interview = () => {
                             <span className='match-score__value'>{report.matchScore}</span>
                             <span className='match-score__pct'>%</span>
                         </div>
-                        <p className='match-score__sub'> Strong match for this role</p>
+                        <p className={`match-score__sub ${scoreColor}`}>
+                            {report.matchScore >= 80 ? 'Strong match for this role' :
+                                report.matchScore >= 60 ? 'Average match for this role' : 'Weak match for this role'}
+                        </p>
                     </div>
 
                     <div className='sidebar-divider' />
@@ -192,6 +206,8 @@ const Interview = () => {
                     </div>
                 </aside>
             </div>
+
+            <button className='button primary-button logout-btn' onClick={handleLogoutClick}>Logout</button>
 
         </div>
     )

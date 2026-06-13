@@ -12,7 +12,7 @@ const ai = new GoogleGenAI({
 async function invokeGeminiAi(prompt = "Hello gemini ! Explain what is Interview ?") {
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             contents: prompt
         })
         console.log(response.text)
@@ -87,7 +87,7 @@ async function generateInterviewReport({ resume, selfdescription, jobdescription
         const geminiSchema = cleanSchemaForGemini(rawSchema);
 
         const response = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -160,7 +160,7 @@ async function generateResumePdf({ resume, selfdescription, jobdescription }) {
         const geminiSchema = cleanSchemaForGemini(rawSchema);
 
         const response = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",

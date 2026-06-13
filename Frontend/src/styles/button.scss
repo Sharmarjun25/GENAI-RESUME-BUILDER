@@ -3,16 +3,22 @@
     outline: none;
     padding-inline: 1.5rem;
     padding-block: 0.75rem;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
-
+    transition: all 0.2s ease-in-out;
+    font-family: inherit;
+    font-weight: 600;
 
     &.primary-button {
-        background-color: rgb(212, 37, 18);
+        background: linear-gradient(135deg, #ff2d78 0%, #d61b5c 100%);
+        color: #ffffff;
+    }
+
+    &:hover {
+        opacity: 0.9;
     }
 
     &:active {
-        transform: scale(0.9);
+        transform: scale(0.98);
     }
 }

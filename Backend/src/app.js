@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());//allow data to be read in request body
 app.use(cookieParser());
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [process.env.FRONTEND_URL || "http://localhost:5173", "http://localhost:5174"],
     credentials: true
 }))
 

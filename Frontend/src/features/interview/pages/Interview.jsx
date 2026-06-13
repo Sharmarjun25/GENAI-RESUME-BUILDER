@@ -82,7 +82,7 @@ const Interview = () => {
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your own customized resume...</h1>
+                <h1>Downloading your own customized resume...</h1>
             </main>
         )
     }
